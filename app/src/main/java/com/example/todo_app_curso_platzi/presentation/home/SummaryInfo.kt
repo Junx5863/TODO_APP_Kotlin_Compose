@@ -19,7 +19,9 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 
 @Composable
@@ -27,21 +29,24 @@ fun SummaryInfo(
     modifier: Modifier = Modifier,
     date: String = "March 9, 2024",
     taskSummary: String = "You have 5 tasks",
-    completeTask: Int,
-    totalTask: Int,
+    completeTask: Int = 5,
+    totalTask: Int = 10,
 ) {
     val angleRatio = remember {
         Animatable(0f)
     }
 
     LaunchedEffect(completeTask, totalTask) {
-        if( totalTask == 0 ){
+        if (totalTask == 0) {
+            angleRatio.animateTo(
+                targetValue = 0f
+            )
             return@LaunchedEffect
         }
         angleRatio.animateTo(
-            completeTask.toFloat()/totalTask.toFloat(),
+            targetValue = (completeTask.toFloat() / totalTask.toFloat()),
             animationSpec = tween(
-                durationMillis = 800
+                durationMillis = 500
             )
         )
     }
@@ -75,15 +80,15 @@ fun SummaryInfo(
             val strokeWidth = 16.dp
             Canvas(
                 modifier = Modifier.aspectRatio(1f)
-            ){
+            ) {
                 drawArc(
                     color = colorBase,
                     startAngle = 0f,
-                    sweepAngle = 360f,
+                    sweepAngle = 380f,
                     useCenter = false,
                     size = size,
                     style = Stroke(
-                        width = strokeWidth.toPx(),
+                        width = 30f,
                         cap = StrokeCap.Round
                     )
                 )
@@ -96,30 +101,30 @@ fun SummaryInfo(
                         useCenter = false,
                         size = size,
                         style = Stroke(
-                            width = strokeWidth.toPx(),
+                            width = 30f,
                             cap = StrokeCap.Round
                         )
                     )
                 }
             }
             Text(
-                text = "${(completeTask/totalTask.toFloat().times(100).toInt())}",
-                style = MaterialTheme.typography.headlineMedium,
+                text = "${(completeTask/totalTask.toFloat()).times(100).toInt()}%",
+                style = MaterialTheme.typography.headlineSmall,
                 color = MaterialTheme.colorScheme.onSurface,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp
             )
         }
     }
 }
 
 
-
 @Preview(
     showBackground = true,
 
-)
+    )
 @Composable
-fun  PreviewSumaryInfo(){
+fun PreviewSummaryInfo() {
     MaterialTheme {
         SummaryInfo(
             modifier = Modifier,

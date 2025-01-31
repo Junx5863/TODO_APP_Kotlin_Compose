@@ -17,7 +17,7 @@ object FakeTaskLocalDataSource: TaskLocalDataSource {
 
 
     override val taskFlow: Flow<List<Task>>
-        get() = TODO("Not yet implemented")
+        get() = _taskFlow
 
     override suspend fun addTask(task: Task) {
         val tasks = _taskFlow.value.toMutableList()

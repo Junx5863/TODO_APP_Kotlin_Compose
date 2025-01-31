@@ -28,6 +28,8 @@ class HomeScreenViewModel : ViewModel() {
                 val pendingTask = it.filter { task -> !task.isImportant }
 
                 state = state.copy(
+                    date = "Marzo 9, 2025",
+                    summary = "${pendingTask.size} incomplete, ${pendingTask.size} Completed",
                     completeTask = completeTask,
                     pendingTask = pendingTask,
                 )
@@ -40,7 +42,7 @@ class HomeScreenViewModel : ViewModel() {
             when(action){
                 HomeScreenAction.OnDeleteAllTasks -> {
                     taskLocalDataSource.deleteAllTasks()
-                    eventChannel.send(HomeScreenEvent.OnDeleteAllTasks)
+                    eventChannel.send(HomeScreenEvent.UpdateDataTask)
                 }
                 is HomeScreenAction.OnDeleteTask -> {
                     taskLocalDataSource.removeTask(action.task)
@@ -49,6 +51,7 @@ class HomeScreenViewModel : ViewModel() {
                 is HomeScreenAction.OnToggleTask -> {
                     val updateTask = action.task.copy(isImportant = !action.task.isImportant)
                     taskLocalDataSource.updateTask(updateTask)
+                    eventChannel.send(HomeScreenEvent.UpdateDataTask)
                 }
                 else -> {}
             }

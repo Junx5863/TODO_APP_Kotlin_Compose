@@ -2,9 +2,6 @@
 
 package com.example.todo_app_curso_platzi.presentation.home
 
-
-import android.content.res.Configuration
-import android.net.http.UploadDataSink
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -46,6 +43,7 @@ import com.example.todo_app_curso_platzi.R
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.todo_app_curso_platzi.presentation.home.provider.HomeScreenPreviewProvider
 import com.example.todo_app_curso_platzi.ui.theme.TODO_APP_Curso_PlatziTheme
+
 @Preview(
     showBackground = true
 )
@@ -66,7 +64,7 @@ fun HomeScreenRoot() {
                         context,
                         context.getString(R.string.all_tasks_deleted),
                         Toast.LENGTH_SHORT,
-                    )
+                    ).show()
                 }
 
                 HomeScreenEvent.OnDeleteTask -> {
@@ -74,7 +72,7 @@ fun HomeScreenRoot() {
                         context,
                         context.getString(R.string.task_deleted),
                         Toast.LENGTH_SHORT,
-                    )
+                    ).show()
                 }
 
                 HomeScreenEvent.UpdateDataTask -> {
@@ -82,7 +80,7 @@ fun HomeScreenRoot() {
                         context,
                         context.getString(R.string.update_task),
                         Toast.LENGTH_SHORT,
-                    )
+                    ).show()
                 }
             }
         }
@@ -98,7 +96,7 @@ fun HomeScreenRoot() {
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomeScreen(
-
+    modifier: Modifier = Modifier,
     state: HomeDataState,
     onAction: (HomeScreenAction) -> Unit
 ) {
@@ -163,8 +161,8 @@ fun HomeScreen(
         LazyColumn(
             modifier = Modifier
                 .padding(paddingValues)
-                .padding(15.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+                .padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             item {
                 SummaryInfo(
@@ -229,8 +227,12 @@ fun HomeScreen(
                     ),
                     task = task,
                     onClickItem = {},
-                    onDeleteItem = {},
-                    onToggleCompletion = {}
+                    onDeleteItem = {
+                        onAction(HomeScreenAction.OnDeleteAllTasks)
+                    },
+                    onToggleCompletion = {
+                        onAction(HomeScreenAction.OnToggleTask(task))
+                    }
                 )
             }
         }
@@ -239,7 +241,7 @@ fun HomeScreen(
 
 }
 
-@Preview
+
 @Composable
 fun HomeScreenPreviewLight(
     @PreviewParameter(HomeScreenPreviewProvider::class) state: HomeDataState
