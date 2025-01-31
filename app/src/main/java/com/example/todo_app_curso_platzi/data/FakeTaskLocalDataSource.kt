@@ -2,12 +2,20 @@ package com.example.todo_app_curso_platzi.data
 
 import com.example.todo_app_curso_platzi.domain.Task
 import com.example.todo_app_curso_platzi.domain.TaskLocalDataSource
+import com.example.todo_app_curso_platzi.presentation.home.provider.completedTask
+import com.example.todo_app_curso_platzi.presentation.home.provider.pendingTask
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 
 object FakeTaskLocalDataSource: TaskLocalDataSource {
     private val _taskFlow = MutableStateFlow<List<Task>>(emptyList())
+
+    init {
+        _taskFlow.value = completedTask + pendingTask
+    }
+
+
     override val taskFlow: Flow<List<Task>>
         get() = TODO("Not yet implemented")
 
