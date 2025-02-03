@@ -17,18 +17,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.todo_app_curso_platzi.R
 
 
 @Composable
 fun SummaryInfo(
     modifier: Modifier = Modifier,
     date: String = "March 9, 2024",
-    taskSummary: String = "You have 5 tasks",
+    taskSummary: String = "",
     completeTask: Int = 5,
     totalTask: Int = 10,
 ) {
@@ -53,7 +54,9 @@ fun SummaryInfo(
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier
+            .padding(16.dp)
+            .weight(1.5f)) {
             Text(
                 text = date,
                 style = MaterialTheme.typography.headlineLarge,
@@ -74,6 +77,7 @@ fun SummaryInfo(
             modifier = Modifier
                 .padding(16.dp)
                 .aspectRatio(1f)
+                .weight(1f)
         ) {
             val colorBase = MaterialTheme.colorScheme.inversePrimary
             val progress = MaterialTheme.colorScheme.primary
@@ -108,7 +112,7 @@ fun SummaryInfo(
                 }
             }
             Text(
-                text = "${(completeTask/totalTask.toFloat()).times(100).toInt()}%",
+                text = "${(completeTask / totalTask.toFloat()).times(100).toInt()}%",
                 style = MaterialTheme.typography.headlineSmall,
                 color = MaterialTheme.colorScheme.onSurface,
                 fontWeight = FontWeight.Bold,
