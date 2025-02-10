@@ -33,6 +33,7 @@ class TaskViewModel : ViewModel() {
     fun onAction(actionTask: ActionTask) {
         viewModelScope.launch {
             when (actionTask) {
+
                 is ActionTask.ChangeTaskCategory -> {
                     state = state.copy(category = actionTask.category)
                 }
@@ -43,7 +44,7 @@ class TaskViewModel : ViewModel() {
                     )
                 }
 
-                ActionTask.SaveTask -> {
+                is ActionTask.SaveTask -> {
                     val task = Task(
                         id = UUID.randomUUID().toString(),
                         title = state.taskName.text.toString(),
@@ -51,10 +52,11 @@ class TaskViewModel : ViewModel() {
                         category = state.category,
 
                         )
-                    fakeTaskLocalDataSource.addTask(task)
+                    fakeTaskLocalDataSource.addTask(
+                        task = task
+                    )
                     eventChannel.send(TaskEvent.TaskCreate)
                 }
-
                 else -> Unit
             }
         }

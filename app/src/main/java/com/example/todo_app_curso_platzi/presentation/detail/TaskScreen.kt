@@ -88,7 +88,7 @@ fun TaskScreen(
     onActionTask: (ActionTask) -> Unit
 ) {
 
-    var idExpanded by remember { mutableStateOf(false) }
+    var isExpanded by remember { mutableStateOf(false) }
     var isDescriptionFocused by remember { mutableStateOf(false) }
     Scaffold(
         topBar = {
@@ -115,7 +115,7 @@ fun TaskScreen(
         },
 
 
-    ) { paddingValues ->
+        ) { paddingValues ->
         Column(
             verticalArrangement = Arrangement.spacedBy(8.dp),
             modifier = modifier
@@ -133,15 +133,20 @@ fun TaskScreen(
                 Checkbox(
                     checked = state.isTaskDone,
                     onCheckedChange = {
-                        ActionTask.ChangeTaskDone(
-                            isTaskDone = it
+                        onActionTask(
+                            ActionTask.ChangeTaskDone(
+                                isTaskDone = it
+                            )
                         )
                     }
                 )
                 Spacer(
                     modifier = modifier.weight(1f)
                 )
-                Row {
+                Row(verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.clickable {
+                        isExpanded = true
+                    }) {
                     Text(
                         text = state.category?.toString() ?: stringResource(R.string.category),
                         style = MaterialTheme.typography.bodyMedium.copy(
@@ -171,26 +176,32 @@ fun TaskScreen(
                         )
 
                         DropdownMenu(
-                            expanded = idExpanded,
-                            onDismissRequest = { idExpanded = false },
                             modifier = Modifier.background(
                                 color = MaterialTheme.colorScheme.surfaceContainerHighest
-                            )
-                        ) {
+                            ),
+                            expanded = isExpanded,
+                            onDismissRequest = { isExpanded = false },
+
+                            ) {
                             Column {
                                 Category.entries.forEach { category ->
                                     Text(
-                                        text = category.toString(),
+                                        text = category.name,
                                         style = MaterialTheme.typography.bodyMedium.copy(
                                             color = MaterialTheme.colorScheme.onSurface
                                         ),
                                         modifier = Modifier
                                             .padding(8.dp)
+                                            .padding(
+                                                8.dp
+                                            )
                                             .clickable {
-                                                //TODO:
-                                            }.clickable {
-                                                onActionTask(ActionTask.ChangeTaskCategory(category))
-                                                idExpanded = false
+                                                onActionTask(
+                                                    ActionTask.ChangeTaskCategory(
+                                                        category = category
+                                                    )
+                                                )
+                                                isExpanded = false
                                             }
                                     )
                                 }
@@ -211,13 +222,12 @@ fun TaskScreen(
                 lineLimits = TextFieldLineLimits.SingleLine,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .wrapContentHeight()
-                ,
+                    .wrapContentHeight(),
                 decorator = { innerTextField ->
-                    Column (
+                    Column(
                         modifier = Modifier.fillMaxWidth(),
-                    ){
-                        if(state.taskName.text.toString().isEmpty()){
+                    ) {
+                        if (state.taskName.text.toString().isEmpty()) {
                             Text(
                                 modifier = Modifier.fillMaxWidth(),
                                 text = stringResource(R.string.task_name),
@@ -228,8 +238,7 @@ fun TaskScreen(
                                     fontWeight = FontWeight.Bold
                                 )
                             )
-                        }
-                        else{
+                        } else {
                             innerTextField()
                         }
                     }
