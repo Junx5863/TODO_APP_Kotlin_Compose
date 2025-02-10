@@ -5,5 +5,5 @@ data class Task(
     val title:String,
     val description:String?,
     val isImportant:Boolean = false,
-    val category:Category? = null,
+    val category: Category? = null,
 )
