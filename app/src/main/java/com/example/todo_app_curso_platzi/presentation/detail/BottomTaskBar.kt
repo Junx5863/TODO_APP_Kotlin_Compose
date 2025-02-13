@@ -3,6 +3,7 @@
 package com.example.todo_app_curso_platzi.presentation.detail.provider
 
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -27,30 +28,69 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.todo_app_curso_platzi.R
 import com.example.todo_app_curso_platzi.domain.Category
+import com.example.todo_app_curso_platzi.presentation.detail.ActionTask
+import com.example.todo_app_curso_platzi.presentation.detail.TaskEvent
+import com.example.todo_app_curso_platzi.presentation.detail.TaskScreenState
+import com.example.todo_app_curso_platzi.presentation.detail.TaskViewModel
 import com.example.todo_app_curso_platzi.ui.theme.TODO_APP_Curso_PlatziTheme
+
+
+@Composable
+fun BottomTaskBar() {
+
+    val viewmodel = viewModel<TaskViewModel>()
+    val state = viewmodel.state
+    val event = viewmodel.events
+
+    val context = LocalContext.current
+
+    LaunchedEffect(true) {
+        event.collect{ event ->
+            when(event){
+                TaskEvent.TaskCreate -> {
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.task_save),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }                }
+        }
+    }
+
+    BottomTaskBar(
+        state = state,
+        onActionTask = viewmodel::onAction
+    )
+}
 
 
 @Composable
 fun BottomTaskBar(
     modifier: Modifier = Modifier,
-    state: TaskBottomSheetState,
+    state: TaskScreenState,
+    onActionTask: (ActionTask) -> Unit
 ) {
 
     var idExpanded by remember { mutableStateOf(false) }
@@ -75,15 +115,11 @@ fun BottomTaskBar(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
-                        text = stringResource(R.string.done),
-                        modifier = Modifier.padding(8.dp)
+                        text = stringResource(R.string.done), modifier = Modifier.padding(8.dp)
                     )
-                    Checkbox(
-                        checked = state.isTaskDone,
-                        onCheckedChange = {
+                    Checkbox(checked = state.isTaskDone, onCheckedChange = {
 
-                        }
-                    )
+                    })
                     Spacer(
                         modifier = modifier.weight(1f)
                     )
@@ -106,9 +142,7 @@ fun BottomTaskBar(
                                 )
                         )
                         Box(
-                            modifier = Modifier
-                                .padding(8.dp),
-                            contentAlignment = Alignment.Center
+                            modifier = Modifier.padding(8.dp), contentAlignment = Alignment.Center
                         ) {
                             Icon(
                                 imageVector = Icons.Default.KeyboardArrowDown,
@@ -125,8 +159,7 @@ fun BottomTaskBar(
                             ) {
                                 Column {
                                     Category.entries.forEach { category ->
-                                        Text(
-                                            text = category.toString(),
+                                        Text(text = category.toString(),
                                             style = typography.bodyMedium.copy(
                                                 color = colorScheme.onSurface
                                             ),
@@ -134,8 +167,7 @@ fun BottomTaskBar(
                                                 .padding(8.dp)
                                                 .clickable {
                                                     //TODO:
-                                                }
-                                        )
+                                                })
                                     }
                                 }
                             }
@@ -146,19 +178,20 @@ fun BottomTaskBar(
 
                 }
                 BasicTextField(
-                    value = state.taskName,
+                    state = state.taskName,
                     textStyle = typography.headlineLarge.copy(
                         fontWeight = FontWeight.Bold,
                         color = colorScheme.onSurface,
                     ),
-                    maxLines = 1,
-                    onValueChange = {},
-                    decorationBox = { innerBox ->
+                    lineLimits = TextFieldLineLimits.SingleLine,
+                    modifier = Modifier.
+                        fillMaxWidth()
+                        .wrapContentHeight(),
+                    decorator = { innerBox ->
                         Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth()
                         ) {
-                            if (state.taskName.isEmpty()) {
+                            if (state.taskName.text.isEmpty()) {
                                 Text(
                                     modifier = Modifier.fillMaxWidth(),
                                     text = stringResource(R.string.task_name),
@@ -177,23 +210,22 @@ fun BottomTaskBar(
                 )
 
                 BasicTextField(
-                    value = state.taskDescription ?: "",
+                    state = state.taskDescription,
                     textStyle = typography.bodyLarge.copy(
                         color = colorScheme.onSurface,
                     ),
-                    maxLines = 15,
-                    onValueChange = {},
+
+
                     modifier = Modifier
                         .fillMaxWidth()
                         .onFocusChanged {
                             isDescriptionFocused = it.isFocused
                         },
-                    decorationBox = { innerBox ->
+                    decorator = { innerBox ->
                         Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth()
                         ) {
-                            if (state.taskDescription.isNullOrEmpty() && !isDescriptionFocused) {
+                            if (state.taskDescription.text.isEmpty() && !isDescriptionFocused) {
                                 Text(
                                     modifier = Modifier.fillMaxWidth(),
                                     text = stringResource(R.string.task_description),
@@ -212,14 +244,12 @@ fun BottomTaskBar(
 
 
                 Button(
-                    onClick = {},
-                    modifier = Modifier
+                    onClick = {}, modifier = Modifier
                         .fillMaxWidth()
                         .padding(46.dp)
                 ) {
                     Text(
-                        text = stringResource(R.string.save),
-                        style = typography.bodyLarge.copy(
+                        text = stringResource(R.string.save), style = typography.bodyLarge.copy(
                             color = colorScheme.onPrimary,
                         )
                     )
@@ -233,18 +263,12 @@ fun BottomTaskBar(
 @Composable
 @Preview
 fun TaskScreenLightPreview(
-    @PreviewParameter(TaskScreenStatePreviewProvider::class) state: TaskBottomSheetState
-){
+    @PreviewParameter(TaskScreenStatePreviewProvider::class) state: TaskScreenState
+) {~
     TODO_APP_Curso_PlatziTheme {
         BottomTaskBar(
             state = state,
+            onActionTask = {}
         )
     }
 }
-
-data class TaskBottomSheetState(
-    val taskName: String = "",
-    val taskDescription: String? = null,
-    val category: Category? = null,
-    val isTaskDone: Boolean = false,
-)

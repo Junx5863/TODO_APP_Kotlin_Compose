@@ -1,39 +1,45 @@
 package com.example.todo_app_curso_platzi.presentation.detail.provider
 
+
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import com.example.todo_app_curso_platzi.domain.Category
+import com.example.todo_app_curso_platzi.domain.Category.WORK
+import com.example.todo_app_curso_platzi.domain.Category.OTHER
+import com.example.todo_app_curso_platzi.presentation.detail.TaskScreenState
 
 
-class TaskScreenStatePreviewProvider: PreviewParameterProvider<TaskBottomSheetState> {
-    override val values: Sequence<TaskBottomSheetState>
+class TaskScreenStatePreviewProvider: PreviewParameterProvider<TaskScreenState> {
+    @OptIn(ExperimentalFoundationApi::class)
+    override val values: Sequence<TaskScreenState>
         get() = sequenceOf(
-            TaskBottomSheetState(
-                taskName = "Task 1",
-                taskDescription = "Description 1",
+            TaskScreenState(
+                taskName = TextFieldState("Task 1"),
+                taskDescription = TextFieldState("Description 1"),
                 isTaskDone = false,
-                category = Category.WORK
+                category = WORK
             ),
-            TaskBottomSheetState(
-                taskName = "Task 2",
-                taskDescription = "Description 2",
+            TaskScreenState(
+                taskName = TextFieldState("Task 2"),
+                taskDescription = TextFieldState("Description 2"),
                 isTaskDone = true,
-                category = Category.WORK
+                category = WORK
             ),
-            TaskBottomSheetState(
-                taskName = "Task 3",
-                taskDescription = "Description 3",
+            TaskScreenState(
+                taskName = TextFieldState("Task 3"),
+                taskDescription = TextFieldState("Description 3"),
                 isTaskDone = false,
-                category = Category.OTHER
+                category = OTHER
             ),
-            TaskBottomSheetState(
-                taskName = "Task 4",
-                taskDescription = "Description 4",
+            TaskScreenState(
+                taskName = TextFieldState("Task 3"),
+                taskDescription = TextFieldState("Description 3"),
                 isTaskDone = true,
                 category = null
             ),
-            TaskBottomSheetState(
-                taskName = "Task 5",
-                taskDescription = null,
+            TaskScreenState(
+                taskName = TextFieldState("Task 4"),
+                taskDescription = TextFieldState(""),
                 isTaskDone = false,
                 category = null
             )
