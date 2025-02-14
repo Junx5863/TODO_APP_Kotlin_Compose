@@ -130,7 +130,10 @@ fun BottomTaskBar(
                     Spacer(
                         modifier = modifier.weight(1f)
                     )
-                    Row {
+                    Row(verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.clickable {
+                            isExpanded = true
+                        }) {
                         Text(
                             text = state.category?.toString() ?: stringResource(R.string.category),
                             style = typography.bodyMedium.copy(
@@ -151,12 +154,6 @@ fun BottomTaskBar(
                         Box(
                             modifier = Modifier.padding(8.dp), contentAlignment = Alignment.Center
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.KeyboardArrowDown,
-                                contentDescription = null,
-                                tint = colorScheme.onSurface,
-                            )
-
                             DropdownMenu(
                                 expanded = isExpanded,
                                 onDismissRequest = { isExpanded = false },
@@ -164,31 +161,32 @@ fun BottomTaskBar(
                                     color = colorScheme.surfaceContainerHighest
                                 )
                             ) {
-                                Column {
-                                    Category.entries.forEach { category ->
-                                        Text(text = category.name,
-                                            style = typography.bodyMedium.copy(
-                                                color = colorScheme.onSurface
-                                            ),
-                                            modifier = Modifier
-                                                .padding(8.dp)
-                                                .clickable {
-                                                    onActionTask(
-                                                        ActionTask.ChangeTaskCategory(
-                                                            category = category
-                                                        )
+                                Category.entries.forEach { category ->
+                                    Text(text = category.name,
+                                        style = typography.bodyMedium.copy(
+                                            color = colorScheme.onSurface
+                                        ),
+                                        modifier = Modifier
+                                            .padding(20.dp)
+                                            .clickable {
+                                                onActionTask(
+                                                    ActionTask.ChangeTaskCategory(
+                                                        category = category
                                                     )
-                                                    isExpanded = false
-                                                }
-                                        )
-                                    }
+                                                )
+                                                isExpanded = false
+                                            }
+                                    )
                                 }
+
                             }
-
-
+                            Icon(
+                                imageVector = Icons.Default.KeyboardArrowDown,
+                                contentDescription = null,
+                                tint = colorScheme.onSurface,
+                            )
                         }
                     }
-
                 }
                 BasicTextField(
                     state = state.taskName,
