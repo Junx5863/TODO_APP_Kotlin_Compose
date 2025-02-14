@@ -58,7 +58,7 @@ import com.example.todo_app_curso_platzi.ui.theme.TODO_APP_Curso_PlatziTheme
 
 
 @Composable
-fun BottomTaskBar() {
+fun BottomTaskBarRoot() {
 
     val viewmodel = viewModel<TaskViewModel>()
     val state = viewmodel.state
@@ -67,15 +67,16 @@ fun BottomTaskBar() {
     val context = LocalContext.current
 
     LaunchedEffect(true) {
-        event.collect{ event ->
-            when(event){
+        event.collect { event ->
+            when (event) {
                 TaskEvent.TaskCreate -> {
                     Toast.makeText(
                         context,
                         context.getString(R.string.task_save),
                         Toast.LENGTH_SHORT
                     ).show()
-                }                }
+                }
+            }
         }
     }
 
@@ -85,7 +86,6 @@ fun BottomTaskBar() {
     )
 }
 
-
 @Composable
 fun BottomTaskBar(
     modifier: Modifier = Modifier,
@@ -93,8 +93,9 @@ fun BottomTaskBar(
     onActionTask: (ActionTask) -> Unit
 ) {
 
-    var idExpanded by remember { mutableStateOf(false) }
+    var isExpanded by remember { mutableStateOf(false) }
     var isDescriptionFocused by remember { mutableStateOf(false) }
+
     val sheetState = rememberModalBottomSheetState()
     Scaffold { paddingValues ->
 
@@ -115,11 +116,17 @@ fun BottomTaskBar(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
-                        text = stringResource(R.string.done), modifier = Modifier.padding(8.dp)
+                        text = stringResource(R.string.done), modifier = Modifier.padding(7.dp)
                     )
-                    Checkbox(checked = state.isTaskDone, onCheckedChange = {
-
-                    })
+                    Checkbox(
+                        checked = state.isTaskDone,
+                        onCheckedChange = {
+                            onActionTask(
+                                ActionTask.ChangeTaskDone(
+                                    isTaskDone = it
+                                )
+                            )
+                        })
                     Spacer(
                         modifier = modifier.weight(1f)
                     )
@@ -151,23 +158,29 @@ fun BottomTaskBar(
                             )
 
                             DropdownMenu(
-                                expanded = idExpanded,
-                                onDismissRequest = { idExpanded = false },
+                                expanded = isExpanded,
+                                onDismissRequest = { isExpanded = false },
                                 modifier = Modifier.background(
                                     color = colorScheme.surfaceContainerHighest
                                 )
                             ) {
                                 Column {
                                     Category.entries.forEach { category ->
-                                        Text(text = category.toString(),
+                                        Text(text = category.name,
                                             style = typography.bodyMedium.copy(
                                                 color = colorScheme.onSurface
                                             ),
                                             modifier = Modifier
                                                 .padding(8.dp)
                                                 .clickable {
-                                                    //TODO:
-                                                })
+                                                    onActionTask(
+                                                        ActionTask.ChangeTaskCategory(
+                                                            category = category
+                                                        )
+                                                    )
+                                                    isExpanded = false
+                                                }
+                                        )
                                     }
                                 }
                             }
@@ -184,8 +197,8 @@ fun BottomTaskBar(
                         color = colorScheme.onSurface,
                     ),
                     lineLimits = TextFieldLineLimits.SingleLine,
-                    modifier = Modifier.
-                        fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
                         .wrapContentHeight(),
                     decorator = { innerBox ->
                         Column(
@@ -244,7 +257,11 @@ fun BottomTaskBar(
 
 
                 Button(
-                    onClick = {}, modifier = Modifier
+                    onClick = {
+                        onActionTask(
+                            ActionTask.SaveTask
+                        )
+                    }, modifier = Modifier
                         .fillMaxWidth()
                         .padding(46.dp)
                 ) {
@@ -264,7 +281,7 @@ fun BottomTaskBar(
 @Preview
 fun TaskScreenLightPreview(
     @PreviewParameter(TaskScreenStatePreviewProvider::class) state: TaskScreenState
-) {~
+) {
     TODO_APP_Curso_PlatziTheme {
         BottomTaskBar(
             state = state,
