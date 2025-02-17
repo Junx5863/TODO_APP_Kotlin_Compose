@@ -41,14 +41,15 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import com.example.todo_app_curso_platzi.R
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import com.example.todo_app_curso_platzi.core.navigation.Routes
 import com.example.todo_app_curso_platzi.presentation.home.provider.HomeScreenPreviewProvider
 import com.example.todo_app_curso_platzi.ui.theme.TODO_APP_Curso_PlatziTheme
 
-@Preview(
-    showBackground = true
-)
 @Composable
-fun HomeScreenRoot() {
+fun HomeScreenRoot(
+    navController: NavController
+) {
     val viewModel: HomeScreenViewModel = viewModel<HomeScreenViewModel>()
     val state = viewModel.state
     val event = viewModel.event
@@ -88,7 +89,20 @@ fun HomeScreenRoot() {
 
     HomeScreen(
         state = state,
-        onAction = viewModel::onAction
+        onAction = {
+            action ->
+            when(action){
+                HomeScreenAction.OnAddTask -> {
+                    navController.navigate(Routes.TaskBottomBar.routes)
+                }
+                is HomeScreenAction.OnClickTask -> {
+                    navController.navigate(Routes.TaskBottomBar.createRoute(action.taskId))
+                }
+                else -> {
+                    viewModel.onAction(action)
+                }
+            }
+        }
     )
 }
 
@@ -152,7 +166,9 @@ fun HomeScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = {},
+                onClick = {
+                     onAction(HomeScreenAction.OnAddTask)
+                },
             ) {
                 Icon(imageVector = Icons.Default.Add, contentDescription = "Add Task")
             }
@@ -193,7 +209,9 @@ fun HomeScreen(
                         RoundedCornerShape(8.dp)
                     ),
                     task = task,
-                    onClickItem = {},
+                    onClickItem = {
+                        onAction(HomeScreenAction.OnClickTask(task.id))
+                    },
                     onDeleteItem = {
                         onAction(HomeScreenAction.OnDeleteTask(task))
                     },
@@ -226,7 +244,10 @@ fun HomeScreen(
                         )
                     ),
                     task = task,
-                    onClickItem = {},
+                    onClickItem = {
+                        onAction(HomeScreenAction.OnClickTask(task.id))
+                        println("Task ID: ${task.id}")
+                    },
                     onDeleteItem = {
                         onAction(HomeScreenAction.OnDeleteAllTasks)
                     },
@@ -239,30 +260,5 @@ fun HomeScreen(
 
     }
 
-}
-
-
-@Composable
-fun HomeScreenPreviewLight(
-    @PreviewParameter(HomeScreenPreviewProvider::class) state: HomeDataState
-) {
-    TODO_APP_Curso_PlatziTheme {
-        HomeScreen(
-            state = state,
-            onAction = {}
-        )
-    }
-}
-
-@Composable
-fun HomeScreenPreviewDark(
-    @PreviewParameter(HomeScreenPreviewProvider::class) state: HomeDataState
-) {
-    TODO_APP_Curso_PlatziTheme {
-        HomeScreen(
-            state = state,
-            onAction = {}
-        )
-    }
 }
 

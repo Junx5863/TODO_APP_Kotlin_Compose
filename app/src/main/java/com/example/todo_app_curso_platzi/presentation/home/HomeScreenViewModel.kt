@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.todo_app_curso_platzi.data.FakeTaskLocalDataSource
+import com.example.todo_app_curso_platzi.domain.Task
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -14,7 +15,7 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-class HomeScreenViewModel : ViewModel() {
+class HomeScreenViewModel() : ViewModel() {
     private val taskLocalDataSource = FakeTaskLocalDataSource
 
     var state by mutableStateOf(HomeDataState())
@@ -29,8 +30,14 @@ class HomeScreenViewModel : ViewModel() {
         })
         taskLocalDataSource.taskFlow
             .onEach {
-                val completeTask = it.filter { task -> task.isImportant }
-                val pendingTask = it.filter { task -> !task.isImportant }
+                val completeTask = it
+                    .filter { task -> task.isImportant }
+                    .sortedByDescending { task -> task.date }
+                val pendingTask = it
+                    .filter { task -> !task.isImportant }
+                    .sortedByDescending { task ->
+                        task.date
+                    }
 
                 state = state.copy(
                     summary = pendingTask.size.toString(),
@@ -41,22 +48,25 @@ class HomeScreenViewModel : ViewModel() {
             .launchIn(viewModelScope)
     }
 
-    fun onAction(action:HomeScreenAction){
+    fun onAction(action: HomeScreenAction) {
         viewModelScope.launch {
-            when(action){
+            when (action) {
                 HomeScreenAction.OnDeleteAllTasks -> {
                     taskLocalDataSource.deleteAllTasks()
                     eventChannel.send(HomeScreenEvent.UpdateDataTask)
                 }
+
                 is HomeScreenAction.OnDeleteTask -> {
                     taskLocalDataSource.removeTask(action.task)
                     eventChannel.send(HomeScreenEvent.OnDeleteTask)
                 }
+
                 is HomeScreenAction.OnToggleTask -> {
                     val updateTask = action.task.copy(isImportant = !action.task.isImportant)
                     taskLocalDataSource.updateTask(updateTask)
                     eventChannel.send(HomeScreenEvent.UpdateDataTask)
                 }
+
                 else -> {}
             }
         }

@@ -3,6 +3,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.todo_app_curso_platzi.domain.Task
@@ -13,9 +14,14 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import java.util.UUID
 
-class TaskViewModel : ViewModel() {
+class TaskViewModel(
+    saveStateHandle: SavedStateHandle
+) : ViewModel() {
     private val fakeTaskLocalDataSource =
         com.example.todo_app_curso_platzi.data.FakeTaskLocalDataSource
+
+
+
 
     var state by mutableStateOf(TaskScreenState())
         private set
@@ -25,6 +31,7 @@ class TaskViewModel : ViewModel() {
     private val canSaveTask = snapshotFlow { state.taskName.text.toString() }
 
     init {
+
         canSaveTask.onEach {
             state = state.copy( canSaveTask = it.isNotEmpty())
         }.launchIn(viewModelScope)
