@@ -30,8 +30,8 @@ class TaskViewModel(
     val events = eventChannel.receiveAsFlow()
     private val canSaveTask = snapshotFlow { state.taskName.text.toString() }
 
-    init {
 
+    init {
         canSaveTask.onEach {
             state = state.copy( canSaveTask = it.isNotEmpty())
         }.launchIn(viewModelScope)

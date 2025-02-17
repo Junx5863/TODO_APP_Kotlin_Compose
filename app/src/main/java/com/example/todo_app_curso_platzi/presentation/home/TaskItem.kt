@@ -16,18 +16,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import com.example.todo_app_curso_platzi.domain.Category
 import com.example.todo_app_curso_platzi.domain.Task
 import com.example.todo_app_curso_platzi.presentation.home.provider.TaskItemPreviewProvider
 import com.example.todo_app_curso_platzi.ui.theme.TODO_APP_Curso_PlatziTheme
-import java.util.UUID
+
 
 
 @Composable
@@ -41,7 +39,11 @@ fun TaskItem(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
-            .clickable { }
+            .clickable {
+                onClickItem(
+                    task.id
+                )
+            }
             .background(
                 color = MaterialTheme.colorScheme.surfaceContainer
             )
