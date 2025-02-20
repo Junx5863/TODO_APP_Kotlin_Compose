@@ -89,7 +89,6 @@ fun BottomTaskBarRoot(
                         Routes.HomeScreen.routes
                     )
                 }
-
                 else -> viewmodel.onAction(action)
             }
         },
