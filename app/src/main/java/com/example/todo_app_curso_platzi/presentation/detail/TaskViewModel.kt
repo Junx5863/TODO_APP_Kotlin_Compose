@@ -1,4 +1,5 @@
 package com.example.todo_app_curso_platzi.presentation.detail
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -15,7 +16,7 @@ import kotlinx.coroutines.launch
 import java.util.UUID
 
 class TaskViewModel(
-    saveStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private val fakeTaskLocalDataSource =
         com.example.todo_app_curso_platzi.data.FakeTaskLocalDataSource
@@ -29,9 +30,26 @@ class TaskViewModel(
     private val eventChannel = Channel<TaskEvent>()
     val events = eventChannel.receiveAsFlow()
     private val canSaveTask = snapshotFlow { state.taskName.text.toString() }
+    val idTask: String = savedStateHandle.get<String>("idTask") ?: ""
 
+    private var editedTask: Task? = null
 
     init {
+        idTask.let {
+            viewModelScope.launch {
+                fakeTaskLocalDataSource.getTasksById(idTask)?.let {
+                        taskInfo ->
+                    editedTask = taskInfo
+                    state = state.copy(
+                        taskName = TextFieldState(taskInfo.title),
+                        taskDescription = TextFieldState(taskInfo.description ?: ""),
+                        isTaskDone = taskInfo.isImportant,
+                        category = taskInfo.category
+                    )
+                }
+            }
+        }
+
         canSaveTask.onEach {
             state = state.copy( canSaveTask = it.isNotEmpty())
         }.launchIn(viewModelScope)

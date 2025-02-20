@@ -7,8 +7,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.example.todo_app_curso_platzi.presentation.detail.BottomTaskBarRoot
 import com.example.todo_app_curso_platzi.presentation.home.HomeScreenRoot
 
@@ -29,11 +31,10 @@ fun NavigatorRoot(
             }
             composable(
                 Routes.TaskBottomBar.routes,
+                arguments = listOf(navArgument("idTask") { type = NavType.StringType })
             ) { navBackStackEntry ->
-                BottomTaskBarRoot(
-                    navController,
-                    navBackStackEntry.arguments?.getString("idTask") ?: ""
-                )
+                val idTask = navBackStackEntry.arguments?.getString("idTask") ?: ""
+                BottomTaskBarRoot( navController, idTask, )
 
             }
         }
