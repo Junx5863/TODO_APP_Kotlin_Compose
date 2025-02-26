@@ -6,8 +6,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
+import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import com.example.todo_app_curso_platzi.TodoApplication
 import com.example.todo_app_curso_platzi.domain.Task
+import com.example.todo_app_curso_platzi.domain.TaskLocalDataSource
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -16,14 +23,9 @@ import kotlinx.coroutines.launch
 import java.util.UUID
 
 class TaskViewModel(
-    savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle,
+    private val localDataSource: TaskLocalDataSource
 ) : ViewModel() {
-    private val fakeTaskLocalDataSource =
-        com.example.todo_app_curso_platzi.data.FakeTaskLocalDataSource
-
-
-
-
     var state by mutableStateOf(TaskScreenState())
         private set
 
@@ -37,7 +39,7 @@ class TaskViewModel(
     init {
         idTask.let {
             viewModelScope.launch {
-                fakeTaskLocalDataSource.getTasksById(idTask)?.let {
+                localDataSource.getTasksById(idTask)?.let {
                         taskInfo ->
                     editedTask = taskInfo
                     state = state.copy(
@@ -77,7 +79,7 @@ class TaskViewModel(
                         category = state.category,
 
                         )
-                    fakeTaskLocalDataSource.addTask(
+                    localDataSource.addTask(
                         task = task
                     )
                     eventChannel.send(TaskEvent.TaskCreate)
@@ -85,6 +87,19 @@ class TaskViewModel(
                 else -> Unit
             }
         }
+    }
+    companion object {
+        val Factory: ViewModelProvider.Factory = viewModelFactory {
+            initializer {
+                val savedStateHandle = createSavedStateHandle()
+                val dataSource = (this[APPLICATION_KEY] as TodoApplication).dataSource
+                TaskViewModel(
+                    localDataSource = dataSource,
+                    savedStateHandle = savedStateHandle
+                )
+            }
+        }
+
     }
 
 }

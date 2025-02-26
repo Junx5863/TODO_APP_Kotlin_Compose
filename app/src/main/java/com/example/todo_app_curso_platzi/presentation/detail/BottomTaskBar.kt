@@ -46,23 +46,22 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.todo_app_curso_platzi.R
 import com.example.todo_app_curso_platzi.core.navigation.Routes
 import com.example.todo_app_curso_platzi.domain.Category
-import kotlinx.coroutines.launch
+
 
 
 @Composable
 fun BottomTaskBarRoot(
     navController: NavController,
     idTask: String,
+    viewModel: TaskViewModel,
 ) {
 
-    val viewmodel = viewModel<TaskViewModel>()
-    val state = viewmodel.state
-    val event = viewmodel.events
+    val state = viewModel.state
+    val event = viewModel.events
 
     val context = LocalContext.current
 
@@ -89,7 +88,7 @@ fun BottomTaskBarRoot(
                         Routes.HomeScreen.routes
                     )
                 }
-                else -> viewmodel.onAction(action)
+                else -> viewModel.onAction(action)
             }
         },
         idTask = idTask

@@ -1,14 +1,14 @@
 package com.example.todo_app_curso_platzi.data
 
 import androidx.room.Dao
-import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Upsert
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TaskDao {
     @Query("SELECT * FROM task")
-    suspend fun getAllTasks(): List<TaskEntity>
+    fun getAllTasks(): Flow<List<TaskEntity>>
 
     @Query("SELECT * FROM task WHERE id = :id")
     suspend fun getTaskById(id: String): TaskEntity?

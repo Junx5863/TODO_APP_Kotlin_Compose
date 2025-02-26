@@ -38,7 +38,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.todo_app_curso_platzi.R
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.todo_app_curso_platzi.core.navigation.Routes
 import com.example.todo_app_curso_platzi.presentation.home.components.SectionTitle
@@ -47,9 +46,9 @@ import com.example.todo_app_curso_platzi.presentation.home.components.TaskItem
 
 @Composable
 fun HomeScreenRoot(
-    navController: NavController
+    navController: NavController,
+    viewModel: HomeScreenViewModel,
 ) {
-    val viewModel: HomeScreenViewModel = viewModel<HomeScreenViewModel>()
     val state = viewModel.state
     val event = viewModel.event
 

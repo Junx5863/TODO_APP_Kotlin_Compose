@@ -4,9 +4,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
+import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.example.todo_app_curso_platzi.data.FakeTaskLocalDataSource
-import com.example.todo_app_curso_platzi.domain.Task
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import com.example.todo_app_curso_platzi.TodoApplication
+import com.example.todo_app_curso_platzi.domain.TaskLocalDataSource
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -15,8 +20,10 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-class HomeScreenViewModel() : ViewModel() {
-    private val taskLocalDataSource = FakeTaskLocalDataSource
+class HomeScreenViewModel(
+    savedStateHandle: androidx.lifecycle.SavedStateHandle,
+    private val taskLocalDataSource: TaskLocalDataSource,
+) : ViewModel() {
 
     var state by mutableStateOf(HomeDataState())
         private set
@@ -70,6 +77,20 @@ class HomeScreenViewModel() : ViewModel() {
                 else -> {}
             }
         }
+    }
+
+    companion object{
+        val Factory: ViewModelProvider.Factory = viewModelFactory {
+            initializer {
+                val savedStateHandle = createSavedStateHandle()
+                val dataSource = (this[APPLICATION_KEY] as TodoApplication).dataSource
+                HomeScreenViewModel(
+                    taskLocalDataSource = dataSource,
+                    savedStateHandle = savedStateHandle
+                )
+            }
+        }
+
     }
 
 
